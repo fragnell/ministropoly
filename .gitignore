@@ -1,0 +1,8 @@
+*-debug.log
+*.log
+.env
+.env.local
+.firebase/
+.relay-data
+dist
+node_modules

@@ -1,0 +1,36 @@
+{
+  "name": "predicandopoly",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Gioco da tavolo multiplayer in tempo reale sul ministero cristiano: tabellone TV, smartphone e pannello del conduttore.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "relay": "node server/relay.mjs",
+    "lan": "npm run build && node server/relay.mjs",
+    "emulators": "npx firebase-tools@13.35.1 emulators:start --only auth,database --project demo-predicandopoly"
+  },
+  "dependencies": {
+    "firebase": "^13.0.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "ws": "^8.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/ws": "^8.18.2",
+    "@vitejs/plugin-react": "^6.1.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "rooms": {
+      "$room": {
+        ".read": false,
+        ".write": "auth != null && !newData.exists() && data.child('meta').child('hostUid').val() === auth.uid",
+
+        "meta": {
+          ".read": "auth != null",
+          ".write": "auth != null && (!data.exists() || data.child('hostUid').val() === auth.uid)",
+          ".validate": "newData.hasChildren(['hostUid', 'createdAt']) && newData.child('hostUid').val() === auth.uid"
+        },
+
+        "state": {
+          ".read": "auth != null",
+          ".write": "auth != null && root.child('rooms').child($room).child('meta').child('hostUid').val() === auth.uid",
+          ".validate": "newData.isString() && newData.val().length < 250000"
+        },
+
+        "log": {
+          ".read": "auth != null",
+          "$entry": {
+            ".write": "auth != null && root.child('rooms').child($room).child('meta').child('hostUid').val() === auth.uid",
+            ".validate": "newData.isString() && newData.val().length < 4000"
+          }
+        },
+
+        "ledger": {
+          ".read": "auth != null",
+          "$entry": {
+            ".write": "auth != null && root.child('rooms').child($room).child('meta').child('hostUid').val() === auth.uid",
+            ".validate": "newData.isString() && newData.val().length < 4000"
+          }
+        },
+
+        "beat": {
+          ".read": "auth != null",
+          ".write": "auth != null && root.child('rooms').child($room).child('meta').child('hostUid').val() === auth.uid",
+          ".validate": "newData.isNumber()"
+        },
+
+        "actions": {
+          ".read": "auth != null && root.child('rooms').child($room).child('meta').child('hostUid').val() === auth.uid",
+          "$action": {
+            ".write": "auth != null && ((!data.exists() && newData.exists() && newData.child('uid').val() === auth.uid) || (data.exists() && !newData.exists() && root.child('rooms').child($room).child('meta').child('hostUid').val() === auth.uid))",
+            ".validate": "newData.hasChildren(['id', 'uid', 'ts', 'action']) && newData.child('id').val() === $action && newData.child('uid').val() === auth.uid && newData.child('action').isString() && newData.child('action').val().length < 6000"
+          }
+        },
+
+        "presence": {
+          ".read": "auth != null && root.child('rooms').child($room).child('meta').child('hostUid').val() === auth.uid",
+          "$uid": {
+            ".write": "auth != null && $uid === auth.uid",
+            ".validate": "newData.isNumber()"
+          }
+        }
+      }
+    }
+  }
+}

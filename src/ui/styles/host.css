@@ -1,0 +1,172 @@
+/* ---------------------------------------------------------------------------
+   HOME, PANNELLO DEL CONDUTTORE
+--------------------------------------------------------------------------- */
+.home {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 18px 48px;
+}
+.home__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 48px;
+}
+.home__hero {
+  text-align: center;
+  padding: 14px 0 24px;
+}
+.home__logo {
+  font-size: 3.4rem;
+  line-height: 1;
+}
+.home__hero h1 {
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  letter-spacing: 0.1em;
+  color: var(--forest);
+  margin: 6px 0;
+}
+.home__tag {
+  font-size: 1.15rem;
+  color: var(--ink-2);
+  max-width: 640px;
+  margin: 0 auto 8px;
+}
+.home__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.home__card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.home__card h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+.home__ico {
+  font-size: 2.2rem;
+}
+.home__how ol {
+  margin: 0 0 8px;
+  padding-left: 1.2em;
+  line-height: 1.7;
+}
+.kinds {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+}
+.kind {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: var(--surface);
+  cursor: pointer;
+}
+.kind.is-on {
+  border-color: var(--forest);
+  background: var(--forest-l);
+}
+.kind.is-off {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 5px solid var(--line);
+  border-top-color: var(--forest);
+  margin: 30px auto 10px;
+  animation: spin 0.8s linear infinite;
+}
+
+/* console */
+.host {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+.host__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.host__tabs {
+  display: flex;
+  gap: 4px;
+  padding: 6px 18px 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+}
+.host__tab {
+  border: 0;
+  background: transparent;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--ink-2);
+  border-bottom: 4px solid transparent;
+  white-space: nowrap;
+}
+.host__tab.is-on {
+  color: var(--forest);
+  border-bottom-color: var(--forest);
+}
+.host__main {
+  flex: 1;
+  padding: 16px 18px 40px;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+}
+.hgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.hwide {
+  grid-column: 1 / -1;
+}
+.tablewrap {
+  overflow-x: auto;
+}
+.invite {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.invite__code {
+  font-family: var(--font-display);
+  font-size: 3.2rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: var(--forest);
+  line-height: 1;
+}
+code {
+  background: var(--bg-2);
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 0.9em;
+}
