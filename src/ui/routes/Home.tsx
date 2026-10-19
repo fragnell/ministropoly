@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { GAME_NAME, GAME_NAMES, GAME_TAGLINE } from '../../config/game.config';
+import { GAME_NAME, GAME_TAGLINE } from '../../config/game.config';
 import { detectTransports, type TransportAvailability } from '../../net/factory';
 import type { TransportKind } from '../../net/protocol';
 import { normalizeRoomCode } from '../../net/protocol';
@@ -70,7 +70,6 @@ export function Home() {
         </div>
         <h1>{GAME_NAME}</h1>
         <p className="home__tag">{GAME_TAGLINE}</p>
-        <p className="muted small">Nome alternativo: {GAME_NAME === GAME_NAMES.primary ? GAME_NAMES.alternative : GAME_NAMES.primary} (si cambia in un solo punto: src/config/game.config.ts)</p>
       </section>
 
       <section className="home__grid">
