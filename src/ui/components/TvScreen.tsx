@@ -32,6 +32,7 @@ export function TvScreen({ view, roomCode, joinLink, link = 'online', hostOnline
   const positions = useDisplayPositions(view);
   const [detail, setDetail] = useState<number | null>(null);
   const [summaryOpen, setSummaryOpen] = useState(true);
+  const [logOpen, setLogOpen] = useState(false);
   const now = useHostNow(view.hostNow, 1000);
 
   useEffect(() => {
@@ -50,40 +51,46 @@ export function TvScreen({ view, roomCode, joinLink, link = 'online', hostOnline
   if (state.phase === 'lobby') center = <LobbyStage view={view} joinLink={joinLink} roomCode={roomCode} />;
   else center = stage ?? <BoardCenter view={view} />;
 
+  const showTimer = timeLeft != null && state.phase !== 'lobby' && state.phase !== 'game_over';
+  const showSummaryReopen = state.phase === 'game_over' && !summaryOpen;
+  const hasTopRow = !embedded || showTimer || showSummaryReopen || !!topExtra;
+
   return (
     <div className={embedded ? 'tv tv--embedded' : 'tv'}>
-      <header className="tv__top">
-        <div className="tv__brand">
-          <span className="tv__logo" aria-hidden="true">
-            🏛️
-          </span>
-          <b>{GAME_NAME}</b>
-        </div>
-        <div className="tv__top-mid">
-          <Chip tone="gold">Stanza {roomCode}</Chip>
-          {timeLeft != null && state.phase !== 'lobby' && state.phase !== 'game_over' && <Chip tone={timeLeft < 300000 ? 'warn' : 'plain'}>⏱ {state.timeUp ? 'ultimo giro' : fmtDuration(Math.max(0, timeLeft))}</Chip>}
-          <LinkBadge link={link} hostOnline={hostOnline} />
-        </div>
-        <div className="row">
-          {topExtra}
-          {state.phase === 'game_over' && !summaryOpen && (
-            <button className="btn btn--gold btn--sm" onClick={() => setSummaryOpen(true)}>
-              🏆 Riepilogo
-            </button>
-          )}
+      {hasTopRow && (
+        <header className="tv__top">
           {!embedded && (
-            <button className="btn btn--ghost btn--sm" onClick={toggleFullscreen} aria-label="Schermo intero" title="Schermo intero">
-              ⛶
-            </button>
+            <>
+              <div className="tv__brand">
+                <span className="tv__logo" aria-hidden="true">
+                  🏛️
+                </span>
+                <b>{GAME_NAME}</b>
+              </div>
+              <div className="tv__top-mid">
+                <Chip tone="gold">Stanza {roomCode}</Chip>
+                {showTimer && <Chip tone={timeLeft! < 300000 ? 'warn' : 'plain'}>⏱ {state.timeUp ? 'ultimo giro' : fmtDuration(Math.max(0, timeLeft!))}</Chip>}
+                <LinkBadge link={link} hostOnline={hostOnline} />
+              </div>
+            </>
           )}
-          <PrefsMenu />
-        </div>
-      </header>
-
-      <aside className="tv__left">
-        <h3 className="tv__h">Giocatori</h3>
-        <PlayersPanel view={view} />
-      </aside>
+          {embedded && showTimer && <Chip tone={timeLeft! < 300000 ? 'warn' : 'plain'}>⏱ {state.timeUp ? 'ultimo giro' : fmtDuration(Math.max(0, timeLeft!))}</Chip>}
+          <div className="row">
+            {topExtra}
+            {showSummaryReopen && (
+              <button className="btn btn--gold btn--sm" onClick={() => setSummaryOpen(true)}>
+                🏆 Riepilogo
+              </button>
+            )}
+            {!embedded && (
+              <button className="btn btn--ghost btn--sm" onClick={toggleFullscreen} aria-label="Schermo intero" title="Schermo intero">
+                ⛶
+              </button>
+            )}
+            {!embedded && <PrefsMenu />}
+          </div>
+        </header>
+      )}
 
       <main className="tv__board">
         <Board view={view} positions={positions} onSquareClick={setDetail} rentTag={rentTag} footer={state.phase !== 'lobby' && state.phase !== 'game_over' ? <QuickLinks view={view} /> : null}>
@@ -109,11 +116,28 @@ export function TvScreen({ view, roomCode, joinLink, link = 'online', hostOnline
             </ul>
           </section>
         )}
-        <h3 className="tv__h">Cronologia</h3>
-        <div className="tv__feed">
-          <ActivityFeed entries={view.log} limit={30} />
-        </div>
+        <section className="tv__history">
+          <h3 className="tv__h">Cronologia</h3>
+          <ActivityFeed entries={view.log} limit={3} />
+          {view.log.length > 0 && (
+            <button className="tv__more" onClick={() => setLogOpen(true)}>
+              ⌄ Mostra cronologia completa
+            </button>
+          )}
+        </section>
+        <section className="tv__players">
+          <h3 className="tv__h">Giocatori</h3>
+          <div className="tv__players-scroll">
+            <PlayersPanel view={view} />
+          </div>
+        </section>
       </aside>
+
+      {logOpen && (
+        <Modal onClose={() => setLogOpen(false)} title="Cronologia completa">
+          <ActivityFeed entries={view.log} limit={400} />
+        </Modal>
+      )}
 
       {state.paused && <PausedBanner />}
       {state.phase === 'game_over' && summaryOpen && <GameOverStage view={view} onClose={() => setSummaryOpen(false)} />}

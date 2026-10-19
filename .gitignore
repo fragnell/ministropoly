@@ -6,3 +6,4 @@
 .relay-data
 dist
 node_modules
+.claude/scheduled_tasks.lock

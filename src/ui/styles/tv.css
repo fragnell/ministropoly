@@ -14,11 +14,11 @@ html.is-tv body {
   height: 100vh;
   height: 100dvh;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) clamp(260px, 22vw, 360px);
   grid-template-rows: auto minmax(0, 1fr);
   grid-template-areas:
-    'top top top'
-    'left board right';
+    'top top'
+    'board right';
   gap: var(--pad);
   padding: var(--pad);
   background:
@@ -27,8 +27,10 @@ html.is-tv body {
   overflow: hidden;
 }
 .tv--embedded {
-  height: min(100dvh - 120px, 900px);
+  flex: 1;
+  height: auto;
   min-height: 560px;
+  max-height: 960px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
 }
@@ -59,28 +61,56 @@ html.is-tv body {
   flex-wrap: wrap;
   justify-content: center;
 }
-.tv__left {
-  grid-area: left;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
 .tv__right {
   grid-area: right;
   min-height: 0;
   display: flex;
   flex-direction: column;
+  gap: 10px;
   overflow: hidden;
+}
+.tv__history {
+  flex: none;
+}
+.tv__players {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.tv__players-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.tv__more {
+  display: block;
+  margin-top: 6px;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  color: var(--forest);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.tv__more:hover {
+  text-decoration: underline;
 }
 .tv__board {
   grid-area: board;
-  /* il tabellone è un quadrato alto quanto lo spazio disponibile */
-  width: calc(100dvh - 2 * var(--pad) - 44px - var(--pad));
   min-width: 0;
-  align-self: start;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  justify-content: center;
 }
-.tv--embedded .tv__board {
-  width: calc(min(100dvh - 120px, 900px) - 2 * var(--pad) - 44px - var(--pad));
+/* il tabellone è un quadrato: la riga della griglia gli dà un'altezza definita,
+   la larghezza si ricava da quella tramite l'aspect-ratio (mai più larga del disponibile) */
+.tv__board .board {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
 }
 .tv__h {
   font-family: var(--font-display);
@@ -90,13 +120,7 @@ html.is-tv body {
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
-.tv__feed {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  mask-image: linear-gradient(#000 85%, transparent);
-}
-.tv__feed .feed__item {
+.tv__history .feed__item {
   font-size: 0.95rem;
 }
 .tv__trades {
@@ -117,19 +141,10 @@ html.is-tv body {
   padding: 6px 10px;
 }
 
-/* tablet in orizzontale / schermi meno larghi: una sola colonna laterale (giocatori sopra, cronologia sotto) */
+/* tablet in orizzontale / schermi meno larghi: colonna destra più stretta */
 @media (max-aspect-ratio: 14/9) {
   .tv {
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-rows: auto auto minmax(0, 1fr);
-    grid-template-areas:
-      'top top'
-      'board left'
-      'board right';
-  }
-  .tv__left {
-    max-height: 46dvh;
-    overflow: auto;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 26vw);
   }
 }
 /* verticale: tutto in colonna, la pagina scorre */
@@ -145,20 +160,21 @@ html.is-tv body {
     grid-template-areas:
       'top'
       'board'
-      'left'
       'right';
   }
   .tv__board {
+    height: auto;
+  }
+  .tv__board .board {
     width: 100%;
+    height: auto;
+    max-width: none;
   }
-  .tv__left,
   .tv__right {
-    max-height: none;
-    margin-top: 0;
+    overflow: visible;
   }
-  .tv__feed {
-    max-height: 340px;
-    overflow: auto;
+  .tv__players-scroll {
+    max-height: 46dvh;
   }
 }
 

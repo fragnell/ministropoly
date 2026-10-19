@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { GAME_NAME } from '../../config/game.config';
+import { GAME_NAME, TOKENS } from '../../config/game.config';
 import { createGame } from '../../engine/state';
 import type { GameState } from '../../engine/types';
 import { createHostTransport, TRANSPORT_LABELS } from '../../net/factory';
@@ -117,7 +117,17 @@ function HostScreen({ ctl, kind }: { ctl: HostController; kind: TransportKind })
   const state = snap.state;
   const [tab, setTab] = useState<HostTab>('control');
   const [toast, setToast] = useState<string | null>(null);
+  const [codeCopied, setCodeCopied] = useState(false);
   const joinBase = useJoinBase(kind);
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(state.roomCode);
+      setCodeCopied(true);
+      setTimeout(() => setCodeCopied(false), 1800);
+    } catch {
+      window.prompt('Copia il codice:', state.roomCode);
+    }
+  };
   const onError = useCallback((m: string) => {
     setToast(m);
     setTimeout(() => setToast((t) => (t === m ? null : t)), 4500);
@@ -129,7 +139,7 @@ function HostScreen({ ctl, kind }: { ctl: HostController; kind: TransportKind })
 
   return (
     <div className="host">
-      <header className="host__top">
+      <header className="host__bar">
         <div className="tv__brand">
           <span className="tv__logo" aria-hidden="true">
             🎛️
@@ -137,13 +147,40 @@ function HostScreen({ ctl, kind }: { ctl: HostController; kind: TransportKind })
           <b>{GAME_NAME}</b>
           <span className="muted small">conduttore</span>
         </div>
-        <div className="row wrap">
-          <Chip tone="gold">Stanza {state.roomCode}</Chip>
-          <Chip>{TRANSPORT_LABELS[kind].title}</Chip>
+
+        <button className="host__code" onClick={copyCode} title="Copia il codice della stanza">
+          <span className="small muted">Codice partita</span>
+          <b>{state.roomCode}</b>
+          <span aria-hidden="true">{codeCopied ? '✓' : '📋'}</span>
+        </button>
+
+        <div className="row wrap host__status">
+          <Chip tone="info" title="Giocatori presenti / posti disponibili">
+            👥 {state.players.length}/{TOKENS.length}
+          </Chip>
           <LinkBadge link={snap.link} hostOnline />
-          <Chip tone="info">📱 {snap.connectedClients} collegat{snap.connectedClients === 1 ? 'o' : 'i'}</Chip>
+          <Chip title={TRANSPORT_LABELS[kind].title}>{TRANSPORT_LABELS[kind].title}</Chip>
         </div>
-        <div className="row">
+
+        {!lobby && (
+          <nav className="host__tabs" aria-label="Sezioni del conduttore">
+            {(
+              [
+                ['control', '🎛️', 'Controllo'],
+                ['tv', '📺', 'Tabellone'],
+                ['log', '📜', 'Cronologia'],
+                ['ledger', '💶', 'Registro economico'],
+                ['save', '💾', 'Salvataggio'],
+              ] as [HostTab, string, string][]
+            ).map(([id, icon, label]) => (
+              <button key={id} className={cls('host__tab', tab === id && 'is-on')} onClick={() => setTab(id)} title={label}>
+                <span aria-hidden="true">{icon}</span> <span className="host__tab-label">{label}</span>
+              </button>
+            ))}
+          </nav>
+        )}
+
+        <div className="row host__actions">
           <Button variant="gold" size="sm" onClick={() => window.open(tvLink, '_blank', 'noopener')}>
             📺 Schermo TV
           </Button>
@@ -151,25 +188,7 @@ function HostScreen({ ctl, kind }: { ctl: HostController; kind: TransportKind })
         </div>
       </header>
 
-      {!lobby && (
-        <nav className="host__tabs" aria-label="Sezioni del conduttore">
-          {(
-            [
-              ['control', '🎛️ Controllo'],
-              ['tv', '📺 Tabellone'],
-              ['log', '📜 Cronologia'],
-              ['ledger', '💶 Registro economico'],
-              ['save', '💾 Salvataggio'],
-            ] as [HostTab, string][]
-          ).map(([id, label]) => (
-            <button key={id} className={cls('host__tab', tab === id && 'is-on')} onClick={() => setTab(id)}>
-              {label}
-            </button>
-          ))}
-        </nav>
-      )}
-
-      <main className="host__main">
+      <main className={cls('host__main', tab === 'tv' && !lobby && 'host__main--tv')}>
         {snap.link === 'offline' && <div className="pbanner pbanner--warn">Il collegamento con il server è interrotto: i giocatori non ricevono aggiornamenti finché non torna.</div>}
         {lobby ? (
           <LobbyPanel ctl={ctl} state={state} kind={kind} joinBase={joinBase} onError={onError} />
