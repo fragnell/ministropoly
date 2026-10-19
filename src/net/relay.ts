@@ -41,7 +41,7 @@ export async function detectRelay(timeoutMs = 1500): Promise<RelayInfo | null> {
     clearTimeout(timer);
     if (!res.ok) return null;
     const info = (await res.json()) as RelayInfo;
-    return info.app === 'predicandopoly-relay' ? info : null;
+    return info.app === 'ministropoly-relay' ? info : null;
   } catch {
     return null;
   }

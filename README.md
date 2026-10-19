@@ -1,4 +1,4 @@
-# PREDICANDOPOLY (nome alternativo: MINISTROPOLY)
+# MINISTROPOLY (nome alternativo: PREDICANDOPOLY)
 
 Gioco di società **multiplayer in tempo reale** per famiglie e ragazzi, ispirato alle meccaniche generali dei giochi di compravendita e sviluppo dei territori e ambientato nella vita e nel ministero cristiano. Tutta l'interfaccia è in italiano.
 
@@ -185,7 +185,7 @@ In un altro terminale i test contro gli emulatori partono da soli (se gli emulat
 npx vitest run tests/firebase-emulator.test.ts
 ```
 
-Per usare l'app stessa con gli emulatori aggiungi a `.env`: `VITE_FIREBASE_USE_EMULATOR=1` (con valori qualsiasi per le altre variabili, es. `demo-key` e `demo-predicandopoly`).
+Per usare l'app stessa con gli emulatori aggiungi a `.env`: `VITE_FIREBASE_USE_EMULATOR=1` (con valori qualsiasi per le altre variabili, es. `demo-key` e `demo-ministropoly`).
 
 ### 4.5 Pubblicazione
 
@@ -198,7 +198,7 @@ Per usare l'app stessa con gli emulatori aggiungi a `.env`: `VITE_FIREBASE_USE_E
 
 | Cosa cambiare | Dove |
 |---|---|
-| **Nome del gioco** (PREDICANDOPOLY ↔ MINISTROPOLY) | `src/config/game.config.ts` (`GAME_NAME`) oppure `VITE_GAME_NAME` nel file `.env` |
+| **Nome del gioco** (MINISTROPOLY ↔ PREDICANDOPOLY) | `src/config/game.config.ts` (`GAME_NAME`) oppure `VITE_GAME_NAME` nel file `.env` |
 | Saldo iniziale, premio di partenza, multa, costo ipoteca, tempi dell'asta, segnalini, moltiplicatori dei contributi | `src/config/game.config.ts` (`ECONOMY`) |
 | **Colori dei gruppi**, costo di visite/studi per gruppo | `src/config/game.config.ts` (`GROUPS`) |
 | Pedine e colori dei giocatori, nomi dei giocatori virtuali | `src/config/game.config.ts` (`TOKENS`, `BOT_NAMES`) |

@@ -45,9 +45,9 @@ describe.skipIf(!enabled)('Firebase (emulatori): sincronizzazione e regole di si
     // configurazione a runtime (window.PP_FIREBASE_CONFIG): punta agli emulatori locali
     (globalThis as { PP_FIREBASE_CONFIG?: unknown }).PP_FIREBASE_CONFIG = {
       apiKey: 'demo-key',
-      authDomain: 'demo-predicandopoly.firebaseapp.com',
-      databaseURL: 'https://demo-predicandopoly-default-rtdb.firebaseio.com',
-      projectId: 'demo-predicandopoly',
+      authDomain: 'demo-ministropoly.firebaseapp.com',
+      databaseURL: 'https://demo-ministropoly-default-rtdb.firebaseio.com',
+      projectId: 'demo-ministropoly',
       appId: '1:1:web:1',
       useEmulator: true,
     };

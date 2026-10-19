@@ -8,8 +8,8 @@
 
 /** Nomi disponibili. Per cambiare nome: modifica GAME_NAME oppure imposta VITE_GAME_NAME in .env */
 export const GAME_NAMES = {
-  primary: 'PREDICANDOPOLY',
-  alternative: 'MINISTROPOLY',
+  primary: 'MINISTROPOLY',
+  alternative: 'PREDICANDOPOLY',
 } as const;
 
 const envName = (import.meta as { env?: Record<string, string | undefined> }).env?.VITE_GAME_NAME;

@@ -1,5 +1,5 @@
 {
-  "name": "predicandopoly",
+  "name": "ministropoly",
   "private": true,
   "version": "1.0.0",
   "description": "Gioco da tavolo multiplayer in tempo reale sul ministero cristiano: tabellone TV, smartphone e pannello del conduttore.",
@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit",
     "relay": "node server/relay.mjs",
     "lan": "npm run build && node server/relay.mjs",
-    "emulators": "npx firebase-tools@13.35.1 emulators:start --only auth,database --project demo-predicandopoly"
+    "emulators": "npx firebase-tools@13.35.1 emulators:start --only auth,database --project demo-ministropoly"
   },
   "dependencies": {
     "firebase": "^13.0.0",

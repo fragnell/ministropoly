@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * PREDICANDOPOLY – server di rete locale
+ * MINISTROPOLY – server di rete locale
  * --------------------------------------
  * - Serve l'app compilata (cartella dist/) a tutti i dispositivi della rete.
  * - Inoltra i messaggi tra il dispositivo del conduttore (autorità del gioco) e i client
@@ -67,7 +67,7 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url ?? '/', 'http://localhost');
   if (url.pathname === '/api/info') {
     res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
-    res.end(JSON.stringify({ app: 'predicandopoly-relay', lanAddresses: lanAddresses(), port: PORT }));
+    res.end(JSON.stringify({ app: 'ministropoly-relay', lanAddresses: lanAddresses(), port: PORT }));
     return;
   }
   if (url.pathname === '/api/health') {
@@ -214,7 +214,7 @@ setInterval(() => {
 
 server.listen(PORT, '0.0.0.0', () => {
   const addrs = lanAddresses();
-  console.log('\n  PREDICANDOPOLY – server di rete locale attivo\n');
+  console.log('\n  MINISTROPOLY – server di rete locale attivo\n');
   console.log(`  Su questo computer:           http://localhost:${PORT}`);
   for (const a of addrs) console.log(`  Dai telefoni (stesso Wi-Fi):  http://${a}:${PORT}`);
   if (!fs.existsSync(DIST)) console.log('\n  ATTENZIONE: manca la cartella dist/. Esegui prima: npm run build\n');
