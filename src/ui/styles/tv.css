@@ -29,7 +29,7 @@ html.is-tv body {
 .tv--embedded {
   flex: 1;
   height: auto;
-  min-height: 560px;
+  min-height: 320px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
 }
@@ -38,7 +38,8 @@ html.is-tv body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 8px 12px;
   min-height: 44px;
 }
 .tv__brand {
@@ -195,6 +196,7 @@ html.is-tv body {
     width: 100%;
     height: auto;
     max-width: none;
+    aspect-ratio: 1;
   }
   .tv__left,
   .tv__right {

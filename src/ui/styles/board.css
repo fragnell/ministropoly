@@ -5,7 +5,9 @@
 .board {
   position: relative;
   width: 100%;
-  aspect-ratio: 1;
+  /* rettangolare (non quadrato come il Monopoly originale): le caselle in alto e in basso
+     guadagnano larghezza per il testo senza dover crescere in altezza */
+  aspect-ratio: 1.35;
   container-type: size;
   background: var(--board-felt);
   border: 0.45cqmin solid var(--forest-d);
