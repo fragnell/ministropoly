@@ -14,7 +14,7 @@ html.is-tv body {
   height: 100vh;
   height: 100dvh;
   display: grid;
-  grid-template-columns: minmax(240px, 0.22fr) minmax(0, 1fr) minmax(260px, 0.24fr);
+  grid-template-columns: minmax(220px, 0.14fr) minmax(0, 1fr) minmax(240px, 0.16fr);
   grid-template-rows: auto minmax(0, 1fr);
   grid-template-areas:
     'top top top'
