@@ -14,7 +14,7 @@ html.is-tv body {
   height: 100vh;
   height: 100dvh;
   display: grid;
-  grid-template-columns: clamp(240px, 19vw, 320px) minmax(0, 1fr) clamp(260px, 21vw, 340px);
+  grid-template-columns: minmax(240px, 0.22fr) minmax(0, 1fr) minmax(260px, 0.24fr);
   grid-template-rows: auto minmax(0, 1fr);
   grid-template-areas:
     'top top top'
@@ -30,7 +30,6 @@ html.is-tv body {
   flex: 1;
   height: auto;
   min-height: 560px;
-  max-height: 960px;
   border-radius: var(--radius);
   border: 1px solid var(--line);
 }
@@ -49,7 +48,7 @@ html.is-tv body {
   font-family: var(--font-display);
   font-size: 1.5rem;
   letter-spacing: 0.06em;
-  color: var(--forest);
+  color: var(--primary);
 }
 .tv__logo {
   font-size: 1.7rem;
@@ -107,7 +106,7 @@ html.is-tv body {
   padding: 2px 0;
   border: 0;
   background: none;
-  color: var(--forest);
+  color: var(--primary);
   font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
@@ -162,7 +161,7 @@ html.is-tv body {
 /* tablet in orizzontale / schermi meno larghi: colonna destra più stretta */
 @media (max-aspect-ratio: 14/9) {
   .tv {
-    grid-template-columns: minmax(0, 1fr) minmax(240px, 30vw);
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 0.3fr);
     grid-template-areas:
       'top top'
       'board left'
@@ -288,7 +287,7 @@ html.is-tv body {
   font-size: 1.5rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-  color: var(--forest);
+  color: var(--primary);
 }
 
 /* ------------------------------ centro del tabellone (inattivo) ------------------------------ */
@@ -307,7 +306,7 @@ html.is-tv body {
   font-size: 5.2cqmin;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: var(--forest);
+  color: var(--primary);
   text-shadow: 0 0.2cqmin 0 rgba(255, 255, 255, 0.5);
   line-height: 1;
 }
@@ -438,7 +437,7 @@ html.is-tv body {
   font-size: 6.5cqmin;
   letter-spacing: 0.28em;
   text-align: center;
-  color: var(--forest);
+  color: var(--primary);
   padding-left: 0.28em;
 }
 .stage--lobby .stage__art {
@@ -549,7 +548,7 @@ html.is-tv body {
 .auction__amount {
   font-size: 3.2rem;
   line-height: 1;
-  color: var(--forest);
+  color: var(--primary);
 }
 .auction__side {
   display: flex;
@@ -737,7 +736,7 @@ html.is-tv body {
   box-shadow: var(--shadow-s);
 }
 .qlink:hover {
-  border-color: var(--forest);
+  border-color: var(--primary);
 }
 .qlink__dot {
   position: absolute;
