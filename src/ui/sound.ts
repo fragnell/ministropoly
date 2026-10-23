@@ -1,6 +1,18 @@
 /**
- * Effetti sonori sintetizzati via Web Audio API: nessun file audio esterno da scaricare.
+ * Effetti sonori: il lancio dei dadi usa una registrazione; gli altri sono sintetizzati
+ * via Web Audio API (nessun file audio esterno da scaricare per quelli).
  */
+let diceAudio: HTMLAudioElement | null = null;
+
+function getDiceAudio(): HTMLAudioElement | null {
+  if (typeof window === 'undefined') return null;
+  if (!diceAudio) {
+    diceAudio = new Audio(`${import.meta.env.BASE_URL}audio/effetto-dado.mp3`);
+    diceAudio.preload = 'auto';
+  }
+  return diceAudio;
+}
+
 let ctx: AudioContext | null = null;
 
 function getCtx(): AudioContext | null {
@@ -30,11 +42,17 @@ function tone(c: AudioContext, freq: number, offset: number, duration: number, t
   osc.stop(t0 + duration + 0.03);
 }
 
-/** Tintinnio rapido quando vengono lanciati i dadi */
+/** Rumore dei dadi lanciati */
 export function sfxDice(): void {
-  const c = getCtx();
-  if (!c) return;
-  for (let i = 0; i < 5; i++) tone(c, 220 + Math.random() * 300, i * 0.05, 0.05, 'square', 0.09);
+  const base = getDiceAudio();
+  if (!base) return;
+  try {
+    const a = base.cloneNode(true) as HTMLAudioElement;
+    a.volume = 0.7;
+    void a.play().catch(() => {});
+  } catch {
+    /* non disponibile */
+  }
 }
 
 /** Passo quando la pedina avanza sul tabellone */
