@@ -177,7 +177,7 @@ export function deckIntegrity(): string[] {
     if (ids.has(c.id)) errors.push(`Carta duplicata ${c.id}`);
     ids.add(c.id);
   }
-  if (TREASURE_CARDS.length !== 24) errors.push('Il mazzo Tesori della Bibbia deve avere 24 carte');
-  if (SURPRISE_CARDS.length !== 24) errors.push('Il mazzo Imprevisti deve avere 24 carte');
+  if (TREASURE_CARDS.length !== 16) errors.push('Il mazzo Probabilità deve avere 16 carte');
+  if (SURPRISE_CARDS.length !== 16) errors.push('Il mazzo Imprevisti deve avere 16 carte');
   return errors;
 }

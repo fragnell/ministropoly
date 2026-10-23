@@ -73,7 +73,7 @@ Vedi la sezione [Firebase](#4-firebase-modalità-online). Con Firebase l'app pu�
 3. **Telefono 1 e telefono 2**: inquadra il QR (o vai su *Sono un giocatore* e digita il codice), scegli nickname e pedina.
 4. Il conduttore (facoltativo) imposta saldo iniziale, durata delle aste, espansioni (*Publisher Power Pack*, *Kids Power Pack*) e partita a tempo, poi **Avvia la partita**.
 5. Il giocatore di turno preme **Lancia i dadi** dal telefono: la TV mostra i dadi e la pedina avanza casella per casella su tutti gli schermi.
-6. Prova nell'ordine: **acquisto** di una via → **rifiuto** (parte l'asta, offri dal secondo telefono) → **contributo** sulla proprietà dell'altro → completamento di un **gruppo** e **sviluppo** (scheda *Proprietà*) → **scambio** (scheda *Scambi*) → **carta** Tesori/Imprevisti → **ipoteca** → **debito e bancarotta**.
+6. Prova nell'ordine: **acquisto** di una via → **rifiuto** (parte l'asta, offri dal secondo telefono) → **contributo** sulla proprietà dell'altro → completamento di un **gruppo** e **sviluppo** (scheda *Proprietà*) → **scambio** (scheda *Scambi*) → **carta** Probabilità/Imprevisti → **ipoteca** → **debito e bancarotta**.
 7. **Ricarica** la pagina di un telefono: il giocatore ritrova subito il proprio posto. **Ricarica** la pagina del conduttore: la partita riparte dal salvataggio, in pausa; premi **Riprendi**.
 8. Chiudi con l'ultimo giocatore rimasto (o *Termina la partita* dal pannello del conduttore).
 
@@ -105,7 +105,7 @@ Tutti i numeri sono in `src/config/` e si possono cambiare senza toccare il moto
 
 **Pausa organizzativa** (casella 10): si arriva dalla casella 30, da carte o con 3 doppi consecutivi (senza premio di partenza). Si esce pagando 50 Ore, con un doppio entro 3 tentativi, con la carta dedicata; al 3° tentativo fallito si pagano 50 Ore e ci si muove.
 
-**Carte**: due mazzi da 24 (*Tesori della Bibbia* e *Imprevisti*), dati strutturati in `src/config/cards.ts`, con effetti **realmente eseguiti** dal motore (Ore, spostamenti, Pausa, carte conservate, sconti, spese per sviluppo ecc.).
+**Carte**: due mazzi da 16 (*Probabilità*: 12 positive + 4 negative; *Imprevisti*: 9 positive + 7 negative — proporzione vicina al Monopoly classico), dati strutturati in `src/config/cards.ts`, con effetti **realmente eseguiti** dal motore (Ore, spostamenti, Pausa, carte conservate, sconti, spese per sviluppo ecc.).
 
 **Espansioni facoltative** (`src/config/challenges.ts`): *Publisher Power Pack* (37 domande/scenari per adulti) e *Kids Power Pack* (38 domande per bambini), con testi originali, categoria, difficoltà, risposta attesa, spiegazione e riferimento biblico. Sul contributo il giocatore può scegliere la **sfida**: se risponde correttamente il contributo è annullato. **La valutazione spetta al proprietario o al conduttore: nessuna IA giudica risposte religiose.**
 
@@ -204,7 +204,7 @@ Per usare l'app stessa con gli emulatori aggiungi a `.env`: `VITE_FIREBASE_USE_E
 | Pedine e colori dei giocatori, nomi dei giocatori virtuali | `src/config/game.config.ts` (`TOKENS`, `BOT_NAMES`) |
 | Durata di animazioni e movimento | `src/config/game.config.ts` (`TIMING`) |
 | **Prezzi e contributi base** delle vie, nomi, ordine delle caselle | `src/config/board.ts` |
-| **Carte** Tesori della Bibbia e Imprevisti | `src/config/cards.ts` (aggiungi un oggetto all'array: l'effetto è uno dei tipi già supportati) |
+| **Carte** Probabilità e Imprevisti | `src/config/cards.ts` (aggiungi un oggetto all'array: l'effetto è uno dei tipi già supportati) |
 | **Domande** delle espansioni | `src/config/challenges.ts` |
 | Tema grafico (colori principali) | `src/ui/styles/tokens.css` |
 
@@ -233,7 +233,7 @@ npm run typecheck   # controllo dei tipi
 | File | Che cosa verifica |
 |---|---|
 | `tests/board-and-economy.test.ts` | 40 caselle, coordinate, gruppi, prezzi, movimento, premio di partenza, acquisto/asta, contributi (tutti i livelli), servizi, sviluppi, segnalini, ipoteche |
-| `tests/rules-advanced.test.ts` | Effetti di **tutte le 48 carte**, Pausa organizzativa, scambi, debiti, bancarotta, vittoria, sfide, pausa, modalità rapida, idempotenza, ingressi |
+| `tests/rules-advanced.test.ts` | Effetti di **tutte le 32 carte**, Pausa organizzativa, scambi, debiti, bancarotta, vittoria, sfide, pausa, modalità rapida, idempotenza, ingressi |
 | `tests/simulation.test.ts` | **30 partite complete** giocate da bot con più giocatori: dopo ogni passo si controllano saldi non negativi, proprietà non duplicate, segnalini, carte e che **ogni Ora sia passata dal registro economico** |
 | `tests/network.test.ts` | Sincronizzazione reale tra conduttore, 2 smartphone e TV con i trasporti **locale** (BroadcastChannel) e **rete locale** (server WebSocket vero): ingresso, autorità del conduttore, dadi, movimento, registro, riconnessione, idempotenza, **ripristino da un salvataggio più vecchio** (epoca) |
 | `tests/ui-smoke.test.tsx` | Ogni schermata si disegna in ogni fase di gioco con i controlli giusti per il giocatore giusto |
@@ -277,7 +277,7 @@ tests/          test
 - **Il conduttore è l'autorità**: se il suo dispositivo si spegne, il gioco si ferma finché non riapre la pagina (la partita si riprende dal salvataggio locale). Non c'è migrazione automatica del ruolo su un altro dispositivo; si usa Esporta/Importa.
 - **Firebase non è stato provato contro un progetto reale** (solo contro gli emulatori): vedi la sezione 4.
 - **Scelte di regola dove le specifiche lasciavano margine**:
-  - «Servizio speciale» nelle carte indica le 4 caselle (Assemblea di circoscrizione, Congresso regionale, Sala delle Assemblee, Testimonianza con carrello); i due servizi a dadi sono contati a parte.
+  - «Servizio speciale» nelle carte indica le 4 caselle (Opera Metropolitana Napoli, Milano, Venezia, Roma); i due servizi a dadi (Opera Portuale, Opera Penitenziaria) sono contati a parte.
   - Per ipotecare una proprietà non deve esserci alcuno sviluppo nel suo gruppo; per scambiarla neppure.
   - Vendendo uno **studio biblico** la proprietà torna a 4 visite (50% del costo dello studio); se la banca non ha 4 visite disponibili scende al numero disponibile e le visite mancanti sono rimborsate al 50%.
   - «Spesa evitata» annulla una spesa verso la banca (caselle spesa e carte che pagano alla banca), a scelta del giocatore.

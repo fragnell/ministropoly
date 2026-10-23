@@ -146,7 +146,7 @@ export function PropertyCard({ state, index, footer, compact }: { state: GameSta
   );
 }
 
-// ------------------------------------------------------------------ carte Tesori / Imprevisti
+// ------------------------------------------------------------------ carte Probabilità / Imprevisti
 
 export function CardFace({ cardId, big, resolved }: { cardId: string; big?: boolean; resolved?: boolean }) {
   const card = getCard(cardId);

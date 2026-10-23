@@ -105,7 +105,7 @@ describe('Schermate: rendering e controlli per fase', () => {
     expect(html(<TvScreen view={view(g2.s)} roomCode="TEST1" joinLink="x" />)).toContain('Proprietà libera');
 
     const g3 = mkGame(3);
-    rollTo(g3, 2); // Tesori della Bibbia
+    rollTo(g3, 2); // Probabilità
     expect(g3.s.phase).toBe('card_draw');
     expect(turn(g3, 0)).toMatch(/Esegui|Conserva|Avanza|Vai|Paga|Ho capito/);
     expect(html(<TvScreen view={view(g3.s)} roomCode="TEST1" joinLink="x" />)).toContain('ha pescato una carta');

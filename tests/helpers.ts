@@ -1,6 +1,7 @@
 import { expect } from 'vitest';
 import { TOKENS } from '../src/config/game.config';
 import { BUYABLE_INDICES } from '../src/config/board';
+import { SURPRISE_CARDS, TREASURE_CARDS } from '../src/config/cards';
 import type { Action } from '../src/engine/actions';
 import { applyAction, needsTick } from '../src/engine/engine';
 import { createGame } from '../src/engine/state';
@@ -147,10 +148,11 @@ export function assertInvariants(s: GameState, label = '', trackBalances = false
   if (s.phase !== 'lobby') {
     for (const deck of ['treasure', 'surprise'] as const) {
       const prefix = deck === 'treasure' ? 'T' : 'S';
+      const total = deck === 'treasure' ? TREASURE_CARDS.length : SURPRISE_CARDS.length;
       const all = [...s.decks[deck].draw, ...s.decks[deck].discard, ...s.players.flatMap((p) => p.heldCards.filter((c) => c.startsWith(prefix)))];
       const inPlay = s.pending?.kind === 'card' && s.pending.deck === deck ? 1 : 0;
       check(new Set(all).size === all.length, `carte duplicate nel mazzo ${deck}${tag}`);
-      check(all.length + inPlay === 24, `carte del mazzo ${deck}: ${all.length}+${inPlay} invece di 24${tag}`);
+      check(all.length + inPlay === total, `carte del mazzo ${deck}: ${all.length}+${inPlay} invece di ${total}${tag}`);
     }
   }
 }

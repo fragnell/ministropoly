@@ -34,8 +34,8 @@ describe('1. Tabellone: 40 caselle esatte', () => {
     expect([0, 10, 20, 30].map(k)).toEqual(['go', 'jail', 'free', 'gotojail']);
     expect([2, 17, 33].every((i) => k(i) === 'treasure')).toBe(true);
     expect([7, 22, 36].every((i) => k(i) === 'surprise')).toBe(true);
-    expect(SQUARES[4]).toMatchObject({ kind: 'tax', amount: 100, name: 'Materiale per il ministero' });
-    expect(SQUARES[38]).toMatchObject({ kind: 'tax', amount: 150 });
+    expect(SQUARES[4]).toMatchObject({ kind: 'tax', amount: 200, name: 'Ammalato: non puoi predicare per un po’' });
+    expect(SQUARES[38]).toMatchObject({ kind: 'tax', amount: 100 });
     expect(SPECIAL_INDICES).toEqual([5, 15, 25, 35]);
     expect(UTILITY_INDICES).toEqual([12, 28]);
     expect(BUYABLE_INDICES).toHaveLength(28);
@@ -56,9 +56,9 @@ describe('1. Tabellone: 40 caselle esatte', () => {
 
   it('prezzi, contributi base e costi di sviluppo corrispondono alla tabella', () => {
     const t: Record<number, [number, number]> = {
-      1: [80, 6], 3: [90, 7], 6: [100, 8], 8: [110, 9], 9: [120, 10], 11: [140, 12], 13: [150, 13], 14: [160, 14],
-      16: [180, 16], 18: [190, 17], 19: [200, 18], 21: [220, 20], 23: [230, 21], 24: [240, 22], 26: [260, 24],
-      27: [270, 25], 29: [280, 26], 31: [300, 28], 32: [310, 29], 34: [320, 30], 37: [360, 35], 39: [400, 40],
+      1: [60, 6], 3: [60, 7], 6: [100, 8], 8: [100, 9], 9: [120, 10], 11: [140, 12], 13: [140, 13], 14: [160, 14],
+      16: [180, 16], 18: [180, 17], 19: [200, 18], 21: [220, 20], 23: [220, 21], 24: [240, 22], 26: [260, 24],
+      27: [260, 25], 29: [280, 26], 31: [300, 28], 32: [300, 29], 34: [320, 30], 37: [350, 35], 39: [400, 40],
     };
     for (const [i, [price, rent]] of Object.entries(t)) {
       expect(SQUARES[Number(i)].price, `prezzo ${i}`).toBe(price);
@@ -69,17 +69,17 @@ describe('1. Tabellone: 40 caselle esatte', () => {
       expect(GROUPS[g].buildCost).toBe(c);
       expect(GROUPS[g].studyCost).toBe(c);
     }
-    expect([5, 15, 25, 35].map((i) => SQUARES[i].price)).toEqual([160, 180, 200, 220]);
+    expect([5, 15, 25, 35].map((i) => SQUARES[i].price)).toEqual([200, 200, 200, 200]);
     expect([12, 28].map((i) => SQUARES[i].price)).toEqual([150, 150]);
   });
 });
 
 describe('Mazzi e pacchetti', () => {
-  it('ogni mazzo ha 24 carte uniche', () => {
-    expect(TREASURE_CARDS).toHaveLength(24);
-    expect(SURPRISE_CARDS).toHaveLength(24);
+  it('ogni mazzo ha 16 carte uniche', () => {
+    expect(TREASURE_CARDS).toHaveLength(16);
+    expect(SURPRISE_CARDS).toHaveLength(16);
     expect(deckIntegrity()).toEqual([]);
-    expect(new Set(ALL_CARDS.map((c) => c.id)).size).toBe(48);
+    expect(new Set(ALL_CARDS.map((c) => c.id)).size).toBe(32);
   });
   it('le espansioni hanno almeno 30 domande ciascuna, con campi completi', () => {
     expect(PUBLISHER_PACK.length).toBeGreaterThanOrEqual(30);
@@ -140,7 +140,7 @@ describe('4–5. Acquisto, rifiuto e asta', () => {
     expect(g.s.props['1'].owner).toBeNull(); // non ancora posseduta
     run(g, 0, { type: 'BUY_PROPERTY' });
     expect(g.s.props['1'].owner).toBe('p1');
-    expect(P(g, 0).cash).toBe(1500 - 80 + 200); // ha anche passato la partenza? (da 38 a 1)
+    expect(P(g, 0).cash).toBe(1500 - 60 + 200); // ha anche passato la partenza? (da 38 a 1)
     assertInvariants(g.s);
     expect(g.s.phase).toBe('turn_end');
   });
@@ -437,23 +437,23 @@ describe('9–10. Sviluppi: distribuzione uniforme e segnalini limitati', () => 
 describe('16. Ipoteche', () => {
   it('ipoteca al 50% e riscatto con il 10%', () => {
     const g = mkGame(3);
-    give(g, 0, [3]); // prezzo 90
+    give(g, 0, [3]); // prezzo 60
     const c = P(g, 0).cash;
     run(g, 0, { type: 'MORTGAGE', square: 3 });
-    expect(P(g, 0).cash).toBe(c + 45);
+    expect(P(g, 0).cash).toBe(c + 30);
     expect(g.s.props['3'].mortgaged).toBe(true);
     expect(runFail(g, 0, { type: 'MORTGAGE', square: 3 })).toMatch(/già/);
     run(g, 0, { type: 'UNMORTGAGE', square: 3 });
-    expect(P(g, 0).cash).toBe(c + 45 - 50); // 45 × 1,1 = 49,5 → 50
+    expect(P(g, 0).cash).toBe(c + 30 - 33); // 30 × 1,1 = 33
     expect(g.s.props['3'].mortgaged).toBe(false);
   });
 
   it('arrotonda per difetto il valore di ipoteca', () => {
     const g = mkGame(3);
-    give(g, 0, [1]); // 80 → 40
+    give(g, 0, [9]); // Via Veneto, prezzo 120 → 60
     const c = P(g, 0).cash;
-    run(g, 0, { type: 'MORTGAGE', square: 1 });
-    expect(P(g, 0).cash).toBe(c + 40);
+    run(g, 0, { type: 'MORTGAGE', square: 9 });
+    expect(P(g, 0).cash).toBe(c + 60);
   });
 
   it('non si ipoteca una proprietà con sviluppi nel gruppo', () => {

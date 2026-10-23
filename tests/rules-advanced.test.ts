@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ALL_CARDS, getCard } from '../src/config/cards';
 import { applyAction } from '../src/engine/engine';
-import { computeRent, developCost, liquidationPotential, netWorth } from '../src/engine/selectors';
+import { computeRent, liquidationPotential, netWorth } from '../src/engine/selectors';
 import { createGame } from '../src/engine/state';
 import { TOKENS } from '../src/config/game.config';
 import { assertInvariants, cid, curIdx, give, mkGame, P, roll, rollTo, run, runFail, settle, tick, type G } from './helpers';
@@ -23,213 +23,49 @@ function ack(g: G): void {
 }
 
 describe('13. Effetti delle carte', () => {
-  it('ricevi Ore dalla banca', () => {
-    const g = mkGame(3);
-    draw(g, 'T01');
-    const c = P(g, 0).cash;
-    ack(g);
-    expect(P(g, 0).cash).toBe(c + 75);
-    expect(g.s.phase).toBe('turn_end');
-    assertInvariants(g.s);
+  it('ricevi Ore dalla banca (9 carte positive di Probabilità)', () => {
+    const amounts: Record<string, number> = { T01: 30, T04: 30, T05: 30, T06: 30, T09: 50, T10: 75, T15: 75, T18: 60, T24: 50 };
+    for (const [id, amount] of Object.entries(amounts)) {
+      const g = mkGame(3);
+      draw(g, id);
+      const c = P(g, 0).cash;
+      ack(g);
+      expect(P(g, 0).cash, id).toBe(c + amount);
+      expect(g.s.phase).toBe('turn_end');
+      assertInvariants(g.s);
+    }
   });
 
-  it('avanza di 3 caselle e risolve la destinazione', () => {
-    const g = mkGame(3);
-    draw(g, 'T04'); // da 17 → 20
-    ack(g);
-    expect(P(g, 0).position).toBe(20);
-    expect(g.s.phase).toBe('turn_end');
+  it('paga alla banca (3 carte negative di Probabilità)', () => {
+    const amounts: Record<string, number> = { T20: 30, T22: 40, T23: 30 };
+    for (const [id, amount] of Object.entries(amounts)) {
+      const g = mkGame(3);
+      draw(g, id);
+      const c = P(g, 0).cash;
+      ack(g);
+      expect(P(g, 0).cash, id).toBe(c - amount);
+      assertInvariants(g.s);
+    }
   });
 
-  it('vai alla casella 0 e ricevi 200 Ore', () => {
+  it('vai alla più vicina Opera Metropolitana (T14)', () => {
     const g = mkGame(3);
-    draw(g, 'T05');
-    const c = P(g, 0).cash;
-    ack(g);
-    expect(P(g, 0).position).toBe(0);
-    expect(P(g, 0).cash).toBe(c + 200);
-  });
-
-  it('vai alla più vicina proprietà stradale libera: acquisto o asta', () => {
-    const g = mkGame(3);
-    give(g, 1, [18]);
-    draw(g, 'T06'); // da 17: 18 è posseduta → 19
-    ack(g);
-    expect(P(g, 0).position).toBe(19);
-    expect(g.s.phase).toBe('buy_decision');
-    run(g, 0, { type: 'DECLINE_PROPERTY' });
-    expect(g.s.phase).toBe('auction');
-  });
-
-  it('sconto del 50% sul prossimo sviluppo', () => {
-    const g = mkGame(3);
-    give(g, 0, [1, 3]);
-    draw(g, 'T09');
-    ack(g);
-    expect(P(g, 0).nextDevDiscount).toBe(50);
-    expect(developCost(g.s, 'p1', 1).cost).toBe(25);
-    const c = P(g, 0).cash;
-    run(g, 0, { type: 'DEVELOP', square: 1 });
-    expect(P(g, 0).cash).toBe(c - 25);
-    expect(P(g, 0).nextDevDiscount).toBe(0); // consumato
-    run(g, 0, { type: 'DEVELOP', square: 3 });
-    expect(P(g, 0).cash).toBe(c - 25 - 50);
-  });
-
-  it('carta "Esci dalla Pausa" conservata e poi usata, tornando nel mazzo', () => {
-    const g = mkGame(3);
-    draw(g, 'T10');
-    ack(g);
-    expect(P(g, 0).heldCards).toEqual(['T10']);
-    expect(g.s.decks.treasure.discard).not.toContain('T10');
-    P(g, 0).inJail = true;
-    P(g, 0).position = 10;
-    g.s.phase = 'jail';
-    run(g, 0, { type: 'USE_JAIL_CARD' });
-    expect(P(g, 0).inJail).toBe(false);
-    expect(P(g, 0).heldCards).toEqual([]);
-    expect(g.s.decks.treasure.discard).toContain('T10');
-    expect(g.s.phase).toBe('turn_start');
-    assertInvariants(g.s);
-  });
-
-  it('conteggi: proprietà sviluppate, servizi speciali, gruppi', () => {
-    const g = mkGame(3);
-    give(g, 0, [1, 3, 6, 5, 15]);
-    g.s.props['1'].level = 1;
-    g.s.props['3'].level = 2;
-    draw(g, 'T14'); // 2 vie sviluppate × 30
-    let c = P(g, 0).cash;
-    ack(g);
-    expect(P(g, 0).cash).toBe(c + 60);
-
-    const g2 = mkGame(3);
-    give(g2, 0, [5, 15, 25]);
-    draw(g2, 'T15');
-    c = P(g2, 0).cash;
-    ack(g2);
-    expect(P(g2, 0).cash).toBe(c + 75);
-
-    const g3 = mkGame(3);
-    give(g3, 0, [1]);
-    draw(g3, 'T16'); // nessun gruppo completo → 30
-    c = P(g3, 0).cash;
-    ack(g3);
-    expect(P(g3, 0).cash).toBe(c + 30);
-    const g4 = mkGame(3);
-    give(g4, 0, [1, 3]);
-    draw(g4, 'T16');
-    c = P(g4, 0).cash;
-    ack(g4);
-    expect(P(g4, 0).cash).toBe(c + 100);
-
-    const g5 = mkGame(3);
-    give(g5, 0, [1, 6, 8, 5]);
-    draw(g5, 'T24'); // gruppi marrone e azzurro → 2 × 20
-    c = P(g5, 0).cash;
-    ack(g5);
-    expect(P(g5, 0).cash).toBe(c + 40);
-  });
-
-  it('T14 ha un tetto di 150 Ore', () => {
-    const g = mkGame(3);
-    give(g, 0, [1, 3, 6, 8, 9, 11, 13]);
-    for (const i of [1, 3, 6, 8, 9, 11, 13]) g.s.props[String(i)].level = 1;
-    draw(g, 'T14');
-    const c = P(g, 0).cash;
-    ack(g);
-    expect(P(g, 0).cash).toBe(c + 150);
-  });
-
-  it('"Spesa evitata": annulla una spesa organizzativa una sola volta', () => {
-    const g = mkGame(3);
-    draw(g, 'T18');
-    ack(g);
-    expect(P(g, 0).heldCards).toEqual(['T18']);
-    g.s.phase = 'turn_start'; // nuovo lancio per il test
-    const c = P(g, 0).cash;
-    rollTo(g, 4); // Materiale per il ministero (100)
-    expect(g.s.pending).toMatchObject({ kind: 'expense', amount: 100 });
-    run(g, 0, { type: 'USE_SAVED_CARD' });
-    expect(P(g, 0).cash).toBe(c); // spesa annullata
-    expect(P(g, 0).heldCards).toEqual([]);
-    assertInvariants(g.s);
-    // seconda volta: si paga
-    g.s.phase = 'turn_start';
-    const c2 = P(g, 0).cash;
-    rollTo(g, 38);
-    expect(g.s.phase).toBe('turn_end');
-    expect(P(g, 0).cash).toBe(c2 - 150);
-  });
-
-  it('"Spesa evitata" può essere rifiutata scegliendo di pagare', () => {
-    const g = mkGame(3);
-    P(g, 0).heldCards = ['T18'];
-    g.s.decks.treasure.draw = g.s.decks.treasure.draw.filter((x) => x !== 'T18');
-    P(g, 0).position = 0;
-    roll(g, 1, 3); // 4 → Materiale per il ministero
-    const c = P(g, 0).cash;
-    run(g, 0, { type: 'PAY_EXPENSE' });
-    expect(P(g, 0).cash).toBe(c - 100);
-    expect(P(g, 0).heldCards).toEqual(['T18']);
-  });
-
-  it('vai al più vicino servizio speciale e risolvi la casella', () => {
-    const g = mkGame(3);
-    draw(g, 'T19'); // da 17 → 25
+    draw(g, 'T14'); // da 17 → 25
     ack(g);
     expect(P(g, 0).position).toBe(25);
     expect(g.s.phase).toBe('buy_decision');
   });
 
-  it('paga alla banca, per proprietà e per sviluppi', () => {
-    let g = mkGame(3);
-    draw(g, 'S01');
-    let c = P(g, 0).cash;
-    ack(g);
-    expect(P(g, 0).cash).toBe(c - 50);
-
-    g = mkGame(3);
-    give(g, 0, [1, 3, 6]);
-    g.s.props['1'].level = 2;
-    g.s.props['3'].level = 5;
-    g.s.bank.visits = 30;
-    g.s.bank.studies = 11;
-    draw(g, 'S03'); // 2 visite × 25 + 1 studio × 100
-    c = P(g, 0).cash;
-    ack(g);
-    expect(P(g, 0).cash).toBe(c - 150);
-
-    g = mkGame(3);
-    give(g, 0, [1, 3, 6]);
-    draw(g, 'S08'); // 3 proprietà × 10
-    c = P(g, 0).cash;
-    ack(g);
-    expect(P(g, 0).cash).toBe(c - 30);
-  });
-
-  it('"Costi di gestione" ha un tetto di 100 Ore', () => {
+  it('torna indietro di 3 caselle (T16)', () => {
     const g = mkGame(3);
-    give(g, 0, [1, 3, 6, 8, 9, 11, 13, 14, 16, 18, 19, 21]);
-    draw(g, 'S08');
-    const c = P(g, 0).cash;
+    draw(g, 'T16'); // da 17 → 14
     ack(g);
-    expect(P(g, 0).cash).toBe(c - 100);
+    expect(P(g, 0).position).toBe(14);
   });
 
-  it('paga a ciascun altro giocatore', () => {
-    const g = mkGame(4);
-    draw(g, 'S07');
-    const c = P(g, 0).cash;
-    ack(g);
-    expect(P(g, 0).cash).toBe(c - 60);
-    expect([1, 2, 3].map((i) => P(g, i).cash)).toEqual([1520, 1520, 1520]);
-    assertInvariants(g.s);
-  });
-
-  it('riprogrammazione urgente: Pausa organizzativa senza i 200 Ore', () => {
+  it('"Opera al bando" (T21): Pausa organizzativa senza i 200 Ore', () => {
     const g = mkGame(3);
-    draw(g, 'S04');
+    draw(g, 'T21');
     const c = P(g, 0).cash;
     ack(g);
     expect(P(g, 0).inJail).toBe(true);
@@ -238,115 +74,51 @@ describe('13. Effetti delle carte', () => {
     expect(g.s.phase).toBe('turn_end');
   });
 
-  it('torna indietro di 3 caselle (senza premio) e risolve la destinazione', () => {
-    const g = mkGame(3);
-    draw(g, 'S05'); // da 22 → 19
-    ack(g);
-    expect(P(g, 0).position).toBe(19);
-    expect(g.s.phase).toBe('buy_decision');
-  });
-
-  it('salta il prossimo turno', () => {
-    const g = mkGame(3);
-    draw(g, 'S09');
-    ack(g);
-    expect(P(g, 0).skipTurn).toBe(true);
-    run(g, 0, { type: 'END_TURN' });
-    expect(g.s.currentPlayerId).toBe('p2');
-    run(g, 1, { type: 'ROLL_DICE' }, { forcedDice: [1, 2] });
-    settle(g);
-    // p2 finisce il turno come può
-    while (g.s.currentPlayerId === 'p2') {
-      if (g.s.phase === 'buy_decision') run(g, 1, { type: 'DECLINE_PROPERTY' });
-      else if (g.s.phase === 'auction') {
-        for (const i of [0, 1, 2]) {
-          if (g.s.phase === 'auction') {
-            try {
-              run(g, i, { type: 'PASS_AUCTION' });
-            } catch {
-              /* già passato */
-            }
-          }
-        }
-      } else if (g.s.phase === 'card_draw') run(g, 1, { type: 'ACK_CARD' });
-      else if (g.s.phase === 'resolving') run(g, 1, { type: 'PAY_RENT' });
-      else if (g.s.phase === 'turn_end') run(g, 1, { type: 'END_TURN' });
-      else if (g.s.phase === 'turn_start') run(g, 1, { type: 'ROLL_DICE' });
-      else settle(g);
+  it('ricevi Ore dalla banca (8 carte positive di Imprevisti)', () => {
+    const amounts: Record<string, number> = { S01: 25, S02: 20, S03: 15, S04: 20, S05: 30, S06: 25, S08: 30, S09: 20 };
+    for (const [id, amount] of Object.entries(amounts)) {
+      const g = mkGame(3);
+      draw(g, id);
+      const c = P(g, 0).cash;
+      ack(g);
+      expect(P(g, 0).cash, id).toBe(c + amount);
+      assertInvariants(g.s);
     }
-    expect(g.s.currentPlayerId).toBe('p3');
-    run(g, 2, { type: 'ROLL_DICE' }, { forcedDice: [1, 2] });
-    settle(g);
-    // p3 chiude; poi p1 viene saltato e tocca a p2
-    for (let i = 0; i < 12 && g.s.currentPlayerId === 'p3'; i++) {
-      if (g.s.phase === 'buy_decision') run(g, 2, { type: 'DECLINE_PROPERTY' });
-      else if (g.s.phase === 'auction') {
-        for (const k of [0, 1, 2]) {
-          if (g.s.phase === 'auction') {
-            try {
-              run(g, k, { type: 'PASS_AUCTION' });
-            } catch {
-              /* già passato */
-            }
-          }
-        }
-      } else if (g.s.phase === 'card_draw') run(g, 2, { type: 'ACK_CARD' });
-      else if (g.s.phase === 'resolving') run(g, 2, { type: 'PAY_RENT' });
-      else if (g.s.phase === 'turn_end') run(g, 2, { type: 'END_TURN' });
-      else settle(g);
+  });
+
+  it('paga alla banca (7 carte negative di Imprevisti)', () => {
+    const amounts: Record<string, number> = { S10: 10, S14: 50, S15: 35, S16: 25, S20: 30, S22: 15, S24: 40 };
+    for (const [id, amount] of Object.entries(amounts)) {
+      const g = mkGame(3);
+      draw(g, id);
+      const c = P(g, 0).cash;
+      ack(g);
+      expect(P(g, 0).cash, id).toBe(c - amount);
+      assertInvariants(g.s);
     }
-    expect(g.s.currentPlayerId).toBe('p2');
-    expect(P(g, 0).skipTurn).toBe(false);
   });
 
-  it('trasferimenti: Sala del Regno, Montenapoleone, Toledo, Sala delle Assemblee, casella 30', () => {
-    let g = mkGame(3);
-    draw(g, 'S10');
-    let c = P(g, 0).cash;
-    ack(g);
-    expect(P(g, 0).position).toBe(0);
-    expect(P(g, 0).cash).toBe(c + 200);
-
-    g = mkGame(3);
-    draw(g, 'S15'); // da 22 a 37, senza attraversare lo 0
-    c = P(g, 0).cash;
-    ack(g);
-    expect(P(g, 0).position).toBe(37);
-    expect(P(g, 0).cash).toBe(c);
-    expect(g.s.phase).toBe('buy_decision');
-
-    g = mkGame(3);
-    draw(g, 'S16'); // da 22 a 1 attraversando lo 0
-    c = P(g, 0).cash;
-    ack(g);
-    expect(P(g, 0).position).toBe(1);
-    expect(P(g, 0).cash).toBe(c + 200);
-
-    g = mkGame(3);
-    draw(g, 'S24');
-    c = P(g, 0).cash;
-    ack(g);
-    expect(P(g, 0).position).toBe(25);
-    expect(P(g, 0).cash).toBe(c);
-
-    g = mkGame(3);
-    draw(g, 'S14'); // vai a 30 e applica l'effetto → Pausa, senza premio
-    c = P(g, 0).cash;
-    ack(g);
-    expect(P(g, 0).inJail).toBe(true);
-    expect(P(g, 0).cash).toBe(c);
-  });
-
-  it('vai alla più vicina casella Tesori della Bibbia e pesca una carta', () => {
+  it.each([
+    ['T19', 'treasure'],
+    ['S07', 'surprise'],
+  ])('carta "Esci di prigione" (%s) conservata e poi usata, tornando nel mazzo', (id, deck) => {
     const g = mkGame(3);
-    draw(g, 'S22'); // da 22 → 33
+    draw(g, id);
     ack(g);
-    expect(P(g, 0).position).toBe(33);
-    expect(g.s.phase).toBe('card_draw');
-    expect(g.s.pending?.kind).toBe('card');
+    expect(P(g, 0).heldCards).toEqual([id]);
+    expect(g.s.decks[deck as 'treasure' | 'surprise'].discard).not.toContain(id);
+    P(g, 0).inJail = true;
+    P(g, 0).position = 10;
+    g.s.phase = 'jail';
+    run(g, 0, { type: 'USE_JAIL_CARD' });
+    expect(P(g, 0).inJail).toBe(false);
+    expect(P(g, 0).heldCards).toEqual([]);
+    expect(g.s.decks[deck as 'treasure' | 'surprise'].discard).toContain(id);
+    expect(g.s.phase).toBe('turn_start');
+    assertInvariants(g.s);
   });
 
-  it('ognuna delle 48 carte si esegue senza errori e senza violare gli invarianti', () => {
+  it('ognuna delle 32 carte si esegue senza errori e senza violare gli invarianti', () => {
     for (const card of ALL_CARDS) {
       const g = mkGame(3, 99);
       give(g, 1, [18, 19, 25]);
@@ -860,10 +632,10 @@ describe('Pausa, modalità rapida, idempotenza e ingressi', () => {
     give(g, 0, [1, 3, 6]);
     g.s.props['3'].mortgaged = true;
     g.s.props['6'].level = 0;
-    expect(netWorth(g.s, 'p1')).toBe(1500 + 80 + 45 + 100);
+    expect(netWorth(g.s, 'p1')).toBe(1500 + 60 + 30 + 100);
     g.s.props['1'].level = 2; // 2 × 50 × 50% = 50
     g.s.props['3'].mortgaged = false;
-    expect(netWorth(g.s, 'p1')).toBe(1500 + 80 + 90 + 100 + 50);
+    expect(netWorth(g.s, 'p1')).toBe(1500 + 60 + 60 + 100 + 50);
   });
 
   it('JOIN: nickname e pedine uniche, massimo 8 giocatori, riconnessione senza doppioni', () => {
