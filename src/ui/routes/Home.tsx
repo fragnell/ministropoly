@@ -70,6 +70,10 @@ export function Home() {
         </div>
         <h1>{GAME_NAME}</h1>
         <p className="home__tag">{GAME_TAGLINE}</p>
+        <p className="home__verse">
+          «…usando al meglio il vostro tempo…»
+          <cite>Efesini 5:15-16</cite>
+        </p>
       </section>
 
       <section className="home__grid">
