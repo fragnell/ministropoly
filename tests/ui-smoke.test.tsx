@@ -43,7 +43,7 @@ const dummyTransport: HostTransport = {
 
 describe('Schermate: rendering e controlli per fase', () => {
   it('home e sala d’attesa', () => {
-    expect(html(<Home />)).toContain('Sono il conduttore');
+    expect(html(<Home />)).toContain('Conduttore / Schermo TV');
     let s = createGame('ROOM1', 1, 1000);
     for (let i = 0; i < 3; i++) {
       const r = applyAction(s, { type: 'JOIN', name: `P${i + 1}`, token: TOKENS[i].id }, { now: 1000, actor: { kind: 'client', clientId: `c${i}` } });

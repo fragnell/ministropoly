@@ -86,19 +86,12 @@ export function Home() {
           <div className="home__ico" aria-hidden="true">
             🎛️
           </div>
-          <h2>Sono il conduttore</h2>
-          <p className="muted">Crea la stanza, scegli le impostazioni, avvia e gestisci la partita. Questo dispositivo è l’arbitro tecnico del gioco.</p>
+          <h2>Conduttore / Schermo TV</h2>
+          <p className="muted">Questo dispositivo è l’arbitro tecnico del gioco: crea la stanza, scegli le impostazioni, avvia e gestisci la partita — e mostra il tabellone a tutti.</p>
           <Button size="lg" block onClick={() => navigate('/host')}>
             Crea o riprendi una partita
           </Button>
-        </div>
-
-        <div className="card home__card">
-          <div className="home__ico" aria-hidden="true">
-            📺
-          </div>
-          <h2>Schermo TV / tablet</h2>
-          <p className="muted">Mostra il tabellone a tutti. Basta inserire il codice della stanza (oppure usare il pulsante «Apri schermo TV» del conduttore).</p>
+          <p className="small muted home__or">oppure, su una TV o un tablet già avviato:</p>
           <CodeEntry target="tv" label="Codice della partita" />
         </div>
       </section>
