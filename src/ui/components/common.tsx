@@ -152,7 +152,7 @@ export function QrImage({ text, size = 280, label }: { text: string; size?: numb
 // ------------------------------------------------------------------ varie
 
 export function PrefsMenu() {
-  const { prefs, setTheme, setMotion } = usePrefs();
+  const { prefs, setTheme, setMotion, setSound } = usePrefs();
   const [open, setOpen] = useState(false);
   return (
     <div className="prefs">
@@ -174,6 +174,14 @@ export function PrefsMenu() {
             {(['auto', 'reduced', 'full'] as const).map((m) => (
               <button key={m} className={cls('seg__btn', prefs.motion === m && 'is-on')} onClick={() => setMotion(m)}>
                 {m === 'auto' ? 'Auto' : m === 'reduced' ? 'Ridotte' : 'Piene'}
+              </button>
+            ))}
+          </div>
+          <div className="small muted">Suoni</div>
+          <div className="seg">
+            {(['on', 'off'] as const).map((s) => (
+              <button key={s} className={cls('seg__btn', prefs.sound === s && 'is-on')} onClick={() => setSound(s)}>
+                {s === 'on' ? '🔊 Attivi' : '🔇 Muti'}
               </button>
             ))}
           </div>

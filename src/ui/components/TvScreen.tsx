@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { GAME_NAME } from '../../config/game.config';
 import { SQUARES } from '../../config/board';
 import { findP, fmtOre } from '../format';
-import { toggleFullscreen, useHostNow, type GameView } from '../hooks';
+import { toggleFullscreen, useGameSfx, useHostNow, usePrefs, useWakeLock, type GameView } from '../hooks';
 import { Board, useDisplayPositions } from './Board';
 import { PropertyCard } from './cards';
 import { Chip, LinkBadge, Modal, PrefsMenu } from './common';
@@ -34,6 +34,9 @@ export function TvScreen({ view, roomCode, joinLink, link = 'online', hostOnline
   const [summaryOpen, setSummaryOpen] = useState(true);
   const [logOpen, setLogOpen] = useState(false);
   const now = useHostNow(view.hostNow, 1000);
+  useWakeLock(state.phase !== 'lobby' && state.phase !== 'game_over');
+  const { prefs } = usePrefs();
+  useGameSfx(view, prefs.sound !== 'off');
 
   useEffect(() => {
     if (embedded) return;

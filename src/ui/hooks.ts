@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { GameState, LedgerEntry, LogEntry } from '../engine/types';
+import { sfxCard, sfxDice, sfxJail, sfxMove } from './sound';
 
 /** Ciò che le schermate hanno bisogno di conoscere della partita, indipendentemente da chi la mostra */
 export interface GameView {
@@ -24,10 +25,12 @@ export function useHostNow(hostNow: () => number, intervalMs = 100): number {
 
 export type ThemePref = 'auto' | 'light' | 'dark';
 export type MotionPref = 'auto' | 'reduced' | 'full';
+export type SoundPref = 'on' | 'off';
 
 interface Prefs {
   theme: ThemePref;
   motion: MotionPref;
+  sound: SoundPref;
 }
 
 const PREFS_KEY = 'pp:prefs';
@@ -35,9 +38,9 @@ const PREFS_KEY = 'pp:prefs';
 function readPrefs(): Prefs {
   try {
     const p = JSON.parse(localStorage.getItem(PREFS_KEY) ?? '{}') as Partial<Prefs>;
-    return { theme: p.theme ?? 'auto', motion: p.motion ?? 'auto' };
+    return { theme: p.theme ?? 'auto', motion: p.motion ?? 'auto', sound: p.sound ?? 'on' };
   } catch {
-    return { theme: 'auto', motion: 'auto' };
+    return { theme: 'auto', motion: 'auto', sound: 'on' };
   }
 }
 
@@ -49,9 +52,22 @@ export function applyPrefs(p: Prefs): void {
   else root.setAttribute('data-motion', p.motion);
 }
 
-export function usePrefs(): { prefs: Prefs; setTheme: (t: ThemePref) => void; setMotion: (m: MotionPref) => void } {
+/** notifica le altre istanze di usePrefs montate nella stessa pagina (es. console del conduttore + tabellone incorporato) */
+const PREFS_EVENT = 'pp:prefs-changed';
+
+export function usePrefs(): {
+  prefs: Prefs;
+  setTheme: (t: ThemePref) => void;
+  setMotion: (m: MotionPref) => void;
+  setSound: (s: SoundPref) => void;
+} {
   const [prefs, setPrefs] = useState<Prefs>(readPrefs);
   useEffect(() => applyPrefs(prefs), [prefs]);
+  useEffect(() => {
+    const onChange = (e: Event) => setPrefs((e as CustomEvent<Prefs>).detail);
+    window.addEventListener(PREFS_EVENT, onChange);
+    return () => window.removeEventListener(PREFS_EVENT, onChange);
+  }, []);
   const save = useCallback((next: Prefs) => {
     setPrefs(next);
     try {
@@ -59,11 +75,13 @@ export function usePrefs(): { prefs: Prefs; setTheme: (t: ThemePref) => void; se
     } catch {
       /* ignora */
     }
+    window.dispatchEvent(new CustomEvent(PREFS_EVENT, { detail: next }));
   }, []);
   return {
     prefs,
     setTheme: (theme) => save({ ...prefs, theme }),
     setMotion: (motion) => save({ ...prefs, motion }),
+    setSound: (sound) => save({ ...prefs, sound }),
   };
 }
 
@@ -115,4 +133,21 @@ export function useWakeLock(enabled: boolean): void {
       void lock?.release().catch(() => {});
     };
   }, [enabled]);
+}
+
+/** Riproduce gli effetti sonori della partita osservando i contatori di stato (dadi, movimento, carte, prigione) */
+export function useGameSfx(view: GameView, enabled: boolean): void {
+  const prev = useRef<{ roll: number; move: number; card: number; jailSeq: number } | null>(null);
+  useEffect(() => {
+    const st = view.state;
+    const jailSeq = st.log.slice(-5).reduce((max, e) => (e.kind === 'jail' && e.seq > max ? e.seq : max), 0);
+    const next = { roll: st.counters.roll, move: st.counters.move, card: st.counters.card, jailSeq };
+    const p = prev.current;
+    prev.current = next;
+    if (!enabled || !p) return;
+    if (next.roll !== p.roll) sfxDice();
+    if (next.move !== p.move) sfxMove();
+    if (next.card !== p.card) sfxCard();
+    if (next.jailSeq !== p.jailSeq) sfxJail();
+  }, [view.state, enabled]);
 }

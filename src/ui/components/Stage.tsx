@@ -138,7 +138,7 @@ export function Stage({ view }: { view: GameView }): ReactNode {
       return (
         <div className="stage">
           <div className="stage__art">
-            <PropertyCard state={state} index={pend.square} />
+            <PropertyCard state={state} index={pend.square} compact />
           </div>
           <div className="stage__txt">
             <h2>Proprietà libera</h2>
