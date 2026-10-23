@@ -4,11 +4,11 @@
  * Percorso orario:
  *   0 = angolo inferiore destro (Sala del Regno – PARTENZA)
  *   1–9 lato inferiore, da destra verso sinistra
- *   10 = angolo inferiore sinistro (Pausa organizzativa – Solo visita)
+ *   10 = angolo inferiore sinistro (Prigione – transito)
  *   11–19 lato sinistro, dal basso verso l'alto
- *   20 = angolo superiore sinistro (Sosta libera)
+ *   20 = angolo superiore sinistro (Pausa al bar)
  *   21–29 lato superiore, da sinistra verso destra
- *   30 = angolo superiore destro (Riprogrammazione urgente)
+ *   30 = angolo superiore destro (IN PRIGIONE)
  *   31–39 lato destro, dall'alto verso il basso
  */
 
@@ -55,7 +55,7 @@ export const SQUARES: SquareDef[] = [
   { index: 7, name: 'Imprevisti', kind: 'surprise', icon: '❓', note: 'Pesca una carta Imprevisti' },
   street(8, 'Via Nazionale', 'Roma', 'azzurro', 100, 9),
   street(9, 'Via Veneto', 'Roma', 'azzurro', 120, 10),
-  { index: 10, name: 'Pausa organizzativa', kind: 'jail', icon: '☕', note: 'Solo visita (nessuna penalità)' },
+  { index: 10, name: 'Prigione (transito)', kind: 'jail', icon: '🔒', note: 'Se ci arrivi di passaggio è solo transito: nessuna penalità' },
   street(11, 'Via Garibaldi', 'Genova', 'rosa', 140, 12),
   { index: 12, name: 'Opera Portuale', kind: 'utility', price: 150, icon: '⚓', note: 'Predica in tutti i porti d’Italia' },
   street(13, 'Via XX Settembre', 'Genova', 'rosa', 140, 13),
@@ -65,7 +65,7 @@ export const SQUARES: SquareDef[] = [
   { index: 17, name: 'Probabilità', kind: 'treasure', icon: '🎲', note: 'Pesca una carta Probabilità' },
   street(18, 'Via Maqueda', 'Palermo', 'arancione', 180, 17),
   street(19, 'Via Ruggero Settimo', 'Palermo', 'arancione', 200, 18),
-  { index: 20, name: 'Sosta libera', kind: 'free', icon: '🌳', note: 'Nessun effetto economico' },
+  { index: 20, name: 'Pausa al bar', kind: 'free', icon: '☕', note: 'Un bel caffè prima di riprendere la predicazione! Nessun effetto economico' },
   street(21, 'Corso Buenos Aires', 'Milano', 'rosso', 220, 20),
   { index: 22, name: 'Imprevisti', kind: 'surprise', icon: '❓', note: 'Pesca una carta Imprevisti' },
   street(23, 'Via Dante', 'Milano', 'rosso', 220, 21),
@@ -75,7 +75,7 @@ export const SQUARES: SquareDef[] = [
   street(27, 'Via Rizzoli', 'Bologna', 'giallo', 260, 25),
   { index: 28, name: 'Opera Penitenziaria', kind: 'utility', price: 150, icon: '🔒', note: 'Predica in tutte le carceri d’Italia' },
   street(29, 'Via Mazzini', 'Verona', 'giallo', 280, 26),
-  { index: 30, name: 'Riprogrammazione urgente', kind: 'gotojail', icon: '📅', note: 'Vai direttamente alla Pausa organizzativa' },
+  { index: 30, name: 'IN PRIGIONE', kind: 'gotojail', icon: '🚔', note: 'La casella che ti manda in prigione!' },
   street(31, 'Via Po', 'Torino', 'verde', 300, 28),
   street(32, 'Via Roma', 'Torino', 'verde', 300, 29),
   { index: 33, name: 'Probabilità', kind: 'treasure', icon: '🎲', note: 'Pesca una carta Probabilità' },

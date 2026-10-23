@@ -96,7 +96,7 @@ export function landOn(s: GameState, p: Player, now: number): void {
     case 'free':
       break;
     case 'gotojail':
-      sendToJail(s, p, 'Riprogrammazione urgente');
+      sendToJail(s, p, 'IN PRIGIONE');
       break;
     case 'tax':
       pushLog(s, `${p.name} deve pagare ${fmt(sq.amount ?? 0)} per «${sq.name}».`, 'money', p.id);
