@@ -113,9 +113,9 @@
 .host__bar {
   display: flex;
   align-items: center;
-  gap: 8px 14px;
+  gap: 6px 14px;
   flex-wrap: wrap;
-  padding: 8px 18px;
+  padding: 6px 18px;
   background: var(--surface);
   border-bottom: 1px solid var(--line);
   position: sticky;
@@ -176,7 +176,7 @@
 }
 .host__main--tv {
   max-width: none;
-  padding: 10px 12px 12px;
+  padding: 6px 10px 8px;
   display: flex;
   flex-direction: column;
 }

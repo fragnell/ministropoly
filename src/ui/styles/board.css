@@ -29,8 +29,8 @@
   overflow: hidden;
   background: var(--surface);
   border: 1px solid color-mix(in srgb, var(--forest-d) 55%, transparent);
-  font-size: 1.6cqmin;
-  line-height: 1.1;
+  font-size: 1.85cqmin;
+  line-height: 1.08;
   color: var(--ink);
 }
 .sq[role='button'] {
@@ -126,7 +126,7 @@
 .sq--jail,
 .sq--free,
 .sq--gotojail {
-  font-size: 1.7cqmin;
+  font-size: 1.95cqmin;
 }
 .sq--go {
   background: linear-gradient(145deg, var(--forest) 0%, var(--forest-d) 100%);
