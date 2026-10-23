@@ -14,11 +14,11 @@ html.is-tv body {
   height: 100vh;
   height: 100dvh;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(260px, 22vw, 360px);
+  grid-template-columns: clamp(240px, 19vw, 320px) minmax(0, 1fr) clamp(260px, 21vw, 340px);
   grid-template-rows: auto minmax(0, 1fr);
   grid-template-areas:
-    'top top'
-    'board right';
+    'top top top'
+    'left board right';
   gap: var(--pad);
   padding: var(--pad);
   background:
@@ -60,6 +60,24 @@ html.is-tv body {
   align-items: center;
   flex-wrap: wrap;
   justify-content: center;
+}
+.tv__left {
+  grid-area: left;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.tv__stage {
+  flex: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px;
+  box-shadow: var(--shadow-s);
 }
 .tv__right {
   grid-area: right;
@@ -144,7 +162,14 @@ html.is-tv body {
 /* tablet in orizzontale / schermi meno larghi: colonna destra più stretta */
 @media (max-aspect-ratio: 14/9) {
   .tv {
-    grid-template-columns: minmax(0, 1fr) minmax(220px, 26vw);
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 30vw);
+    grid-template-areas:
+      'top top'
+      'board left'
+      'board right';
+  }
+  .tv__left {
+    max-height: 46dvh;
   }
 }
 /* verticale: tutto in colonna, la pagina scorre */
@@ -160,6 +185,7 @@ html.is-tv body {
     grid-template-areas:
       'top'
       'board'
+      'left'
       'right';
   }
   .tv__board {
@@ -170,8 +196,10 @@ html.is-tv body {
     height: auto;
     max-width: none;
   }
+  .tv__left,
   .tv__right {
     overflow: visible;
+    max-height: none;
   }
   .tv__players-scroll {
     max-height: 46dvh;
@@ -421,6 +449,67 @@ html.is-tv body {
 .stage--lobby h2 {
   font-size: 3.2cqmin;
 }
+
+/* Quando lo "Stage" (asta, acquisto, sfida, carta, debito…) vive nel pannello laterale
+   sinistro invece che nel tabellone, non ha più un contenitore cqmin: usa misure fisse. */
+.tv__stage .stage {
+  width: auto;
+  height: auto;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 0;
+}
+.tv__stage .stage--center {
+  text-align: center;
+  gap: 8px;
+}
+.tv__stage .stage--auction {
+  gap: 8px;
+}
+.tv__stage .stage__art {
+  flex: none;
+  max-width: 85%;
+  margin: 0 auto;
+}
+.tv__stage .stage__art--wide {
+  max-width: 95%;
+}
+.tv__stage .stage__txt {
+  font-size: 0.92rem;
+}
+.tv__stage .stage__txt h2,
+.tv__stage .stage--center h2,
+.tv__stage .stage__title {
+  font-size: 1.1rem;
+  margin: 0 0 4px;
+}
+.tv__stage .stage__big {
+  font-size: 1rem;
+  margin: 0 0 4px;
+}
+.tv__stage .stage__icon {
+  font-size: 2.6rem;
+  text-align: center;
+}
+.tv__stage .deed,
+.tv__stage .gcard,
+.tv__stage .qcard {
+  font-size: 0.82rem;
+}
+.tv__stage .gcard--big {
+  font-size: 0.9rem;
+}
+.tv__stage .auction__amount {
+  font-size: 1.9rem;
+}
+.tv__stage .auction {
+  grid-template-columns: 1fr;
+}
+.tv__stage .auction__prop {
+  max-width: 85%;
+  margin: 0 auto;
+}
 .steps {
   margin: 0 0 1.4cqmin;
   padding-left: 1.3em;
@@ -626,23 +715,24 @@ html.is-tv body {
 /* ------------------------------ collegamenti rapidi ------------------------------ */
 .qlinks {
   display: flex;
-  gap: 1cqmin;
+  gap: 6px;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 0.4cqmin;
+  margin-top: 4px;
+  flex: none;
 }
 .qlink {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 0.8cqmin;
-  padding: 0.9cqmin 1.8cqmin;
+  gap: 6px;
+  padding: 7px 12px;
   border-radius: 999px;
-  border: 0.25cqmin solid var(--line);
+  border: 1px solid var(--line);
   background: var(--surface);
   color: var(--ink);
   font-weight: 700;
-  font-size: 1.7cqmin;
+  font-size: 0.85rem;
   cursor: pointer;
   box-shadow: var(--shadow-s);
 }
@@ -651,13 +741,13 @@ html.is-tv body {
 }
 .qlink__dot {
   position: absolute;
-  top: -0.3cqmin;
-  right: -0.2cqmin;
-  width: 1.6cqmin;
-  height: 1.6cqmin;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--danger);
-  border: 0.25cqmin solid var(--surface);
+  border: 2px solid var(--surface);
 }
 .pchips {
   display: flex;

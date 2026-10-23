@@ -8,7 +8,7 @@ import { DevMarks } from './cards';
 import { cls } from './common';
 
 /** Larghezza relativa delle 11 colonne/righe: angoli più grandi delle caselle laterali */
-const CORNER = 1.55;
+const CORNER = 2.7;
 const TRACKS = [CORNER, 1, 1, 1, 1, 1, 1, 1, 1, 1, CORNER];
 const TOTAL = TRACKS.reduce((a, b) => a + b, 0);
 const TEMPLATE = TRACKS.map((t) => `${t}fr`).join(' ');

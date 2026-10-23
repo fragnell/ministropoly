@@ -49,7 +49,8 @@ export function TvScreen({ view, roomCode, joinLink, link = 'online', hostOnline
 
   let center: ReactNode;
   if (state.phase === 'lobby') center = <LobbyStage view={view} joinLink={joinLink} roomCode={roomCode} />;
-  else center = stage ?? <BoardCenter view={view} />;
+  else center = <BoardCenter view={view} />;
+  const showSide = state.phase !== 'lobby' && state.phase !== 'game_over';
 
   const showTimer = timeLeft != null && state.phase !== 'lobby' && state.phase !== 'game_over';
   const showSummaryReopen = state.phase === 'game_over' && !summaryOpen;
@@ -92,8 +93,15 @@ export function TvScreen({ view, roomCode, joinLink, link = 'online', hostOnline
         </header>
       )}
 
+      {showSide && (
+        <aside className="tv__left">
+          {stage && <div className="tv__stage">{stage}</div>}
+          <QuickLinks view={view} />
+        </aside>
+      )}
+
       <main className="tv__board">
-        <Board view={view} positions={positions} onSquareClick={setDetail} rentTag={rentTag} footer={state.phase !== 'lobby' && state.phase !== 'game_over' ? <QuickLinks view={view} /> : null}>
+        <Board view={view} positions={positions} onSquareClick={setDetail} rentTag={rentTag}>
           {center}
         </Board>
       </main>
