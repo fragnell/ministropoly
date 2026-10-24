@@ -11,7 +11,7 @@ import { Board, useDisplayPositions } from './Board';
 import { PropertyCard } from './cards';
 import { Chip, LinkBadge, Modal, PrefsMenu } from './common';
 import { ActivityFeed, PlayersPanel } from './panels';
-import { QuickLinks } from './QuickPanels';
+import { QuickLinks, type QuickAdmin } from './QuickPanels';
 import { BoardCenter, GameOverStage, LobbyStage, PausedBanner, Stage } from './Stage';
 import { elapsedMs } from '../../engine/state';
 import { fmtDuration } from '../format';
@@ -25,9 +25,11 @@ export interface TvProps {
   /** contenuto extra nella barra superiore (es. pulsanti del conduttore) */
   topExtra?: ReactNode;
   embedded?: boolean;
+  /** presente solo quando incorporato nella console del conduttore: aggiunge Controllo/Registro/Salvataggio ai collegamenti rapidi */
+  admin?: QuickAdmin;
 }
 
-export function TvScreen({ view, roomCode, joinLink, link = 'online', hostOnline = true, topExtra, embedded }: TvProps) {
+export function TvScreen({ view, roomCode, joinLink, link = 'online', hostOnline = true, topExtra, embedded, admin }: TvProps) {
   const { state } = view;
   const positions = useDisplayPositions(view);
   const [detail, setDetail] = useState<number | null>(null);
@@ -99,7 +101,7 @@ export function TvScreen({ view, roomCode, joinLink, link = 'online', hostOnline
       {showSide && (
         <aside className="tv__left">
           {stage && <div className="tv__stage">{stage}</div>}
-          <QuickLinks view={view} />
+          <QuickLinks view={view} admin={admin} />
         </aside>
       )}
 

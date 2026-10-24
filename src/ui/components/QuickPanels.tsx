@@ -6,15 +6,27 @@ import { BUYABLE_INDICES, SQUARES, squareLabel } from '../../config/board';
 import { GROUPS, GROUP_ORDER } from '../../config/game.config';
 import { economySnapshot, ownedSquares } from '../../engine/selectors';
 import type { GameState, Player } from '../../engine/types';
+import type { HostController } from '../../net/host';
+import type { TransportKind } from '../../net/protocol';
+import { ControlPanel } from '../host/ControlPanel';
+import { SavePanel } from '../host/SavePanel';
 import { findP, fmtMoney, fmtOre } from '../format';
 import type { GameView } from '../hooks';
 import { DevMarks } from './cards';
 import { Chip, EmptyNote, Modal, Pawn, cls } from './common';
 import { ActivityFeed, AuctionView, LedgerList, TradeSummary } from './panels';
 
-type Panel = 'bank' | 'props' | 'auctions' | 'trades' | null;
+type Panel = 'bank' | 'props' | 'auctions' | 'trades' | 'control' | 'registro' | 'save' | null;
 
-export function QuickLinks({ view }: { view: GameView }) {
+/** Presente solo per il conduttore (non per lo schermo TV dei soli spettatori) */
+export interface QuickAdmin {
+  ctl: HostController;
+  kind: TransportKind;
+  saved: number | null;
+  onError: (m: string) => void;
+}
+
+export function QuickLinks({ view, admin }: { view: GameView; admin?: QuickAdmin }) {
   const [open, setOpen] = useState<Panel>(null);
   const s = view.state;
   const pendingTrades = s.trades.filter((t) => t.status === 'pending').length;
@@ -32,6 +44,9 @@ export function QuickLinks({ view }: { view: GameView }) {
         {btn('props', '🏠', 'Proprietà')}
         {btn('auctions', '🔨', 'Aste', !!s.auction)}
         {btn('trades', '🤝', 'Scambi', pendingTrades > 0)}
+        {admin && btn('control', '🎛️', 'Controllo')}
+        {admin && btn('registro', '📖', 'Registro')}
+        {admin && btn('save', '💾', 'Salvataggio')}
       </div>
       {open === 'bank' && (
         <Modal onClose={() => setOpen(null)} title="Banca e patrimoni" wide>
@@ -53,7 +68,41 @@ export function QuickLinks({ view }: { view: GameView }) {
           <TradesPanel state={s} />
         </Modal>
       )}
+      {open === 'control' && admin && (
+        <Modal onClose={() => setOpen(null)} title="Controllo della partita" wide>
+          <ControlPanel ctl={admin.ctl} view={view} onError={admin.onError} />
+        </Modal>
+      )}
+      {open === 'registro' && admin && (
+        <Modal onClose={() => setOpen(null)} title="Registro" wide>
+          <RegistroPanel view={view} />
+        </Modal>
+      )}
+      {open === 'save' && admin && (
+        <Modal onClose={() => setOpen(null)} title="Salvataggio" wide>
+          <SavePanel ctl={admin.ctl} kind={admin.kind} saved={admin.saved} onError={admin.onError} />
+        </Modal>
+      )}
     </>
+  );
+}
+
+function RegistroPanel({ view }: { view: GameView }) {
+  const s = view.state;
+  return (
+    <div className="stack">
+      <section>
+        <h3>Cronologia della partita</h3>
+        <ActivityFeed entries={s.log} limit={400} />
+      </section>
+      <section>
+        <h3>Registro economico</h3>
+        <p className="small muted">Ogni variazione di saldo è registrata con causale, saldi prima e dopo. Qui le ultime 150 operazioni; il file di esportazione le contiene tutte.</p>
+        <div className="tablewrap">
+          <LedgerList state={s} entries={s.ledger} limit={150} />
+        </div>
+      </section>
+    </div>
   );
 }
 

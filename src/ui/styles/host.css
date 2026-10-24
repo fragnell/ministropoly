@@ -142,12 +142,13 @@
   align-items: center;
   gap: 6px 14px;
   flex-wrap: wrap;
-  padding: 6px 18px;
+  padding: 5px 18px;
   background: var(--surface);
   border-bottom: 1px solid var(--line);
   position: sticky;
   top: 0;
   z-index: 40;
+  min-height: 0;
 }
 .host__code {
   display: flex;
@@ -156,7 +157,7 @@
   border: 1px solid var(--line);
   background: var(--surface-2);
   border-radius: 999px;
-  padding: 4px 10px;
+  padding: 3px 10px;
   cursor: pointer;
   font-size: 0.95rem;
   color: var(--ink);
@@ -166,30 +167,6 @@
 }
 .host__status {
   gap: 6px;
-}
-.host__tabs {
-  display: flex;
-  gap: 2px;
-  flex-wrap: wrap;
-  overflow-x: auto;
-}
-.host__tab {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  border: 0;
-  background: transparent;
-  padding: 6px 10px;
-  font-weight: 700;
-  font-size: 0.85rem;
-  cursor: pointer;
-  color: var(--ink-2);
-  border-radius: 999px;
-  white-space: nowrap;
-}
-.host__tab.is-on {
-  color: var(--forest);
-  background: var(--forest-l);
 }
 .host__actions {
   margin-left: auto;
@@ -206,11 +183,6 @@
   padding: 6px 10px 8px;
   display: flex;
   flex-direction: column;
-}
-@media (max-width: 900px) {
-  .host__tab-label {
-    display: none;
-  }
 }
 .hgrid {
   display: grid;

@@ -83,6 +83,29 @@
   letter-spacing: 0.02em;
 }
 
+/* caselle laterali con prezzo: la fascia mostra il valore invece del numero di categoria
+   (che non serve) e il corpo diventa una riga sola, per sfruttare meglio una casella bassa e larga */
+.sq--sideways .sq__band {
+  width: 6.2cqmin;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.1em;
+  padding: 0.2em 0;
+}
+.sq__bandprice {
+  font-size: 1.25em;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.sq--sideways .sq__body {
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 0.5em;
+  padding: 0 0.5em;
+}
+
 .sq__body {
   flex: 1 1 auto;
   min-width: 0;
@@ -106,12 +129,27 @@
   hyphens: auto;
   overflow-wrap: anywhere;
 }
+.sq--sideways .sq__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  hyphens: none;
+}
 .sq__name--long {
   font-size: 0.82em;
+}
+.sq--sideways .sq__name--long {
+  font-size: 0.92em;
 }
 .sq__city {
   font-size: 0.82em;
   color: var(--ink-2);
+}
+.sq--sideways .sq__city {
+  flex: none;
+  white-space: nowrap;
 }
 .sq__price {
   font-weight: 800;

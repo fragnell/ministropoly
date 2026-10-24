@@ -65,6 +65,9 @@ const Square = memo(function Square({ sq, st, owner, tag, focus, target, onClick
   const { col, row } = squareCoords(sq.index);
   const side = sideOf(sq.index);
   const group = sq.group ? GROUPS[sq.group] : null;
+  /** sulle caselle laterali (strette e larghe) il prezzo prende il posto del numero di categoria, che non serve */
+  const sideways = side === 'left' || side === 'right';
+  const priceInBand = sq.kind === 'street' && !!group && sideways;
   const style = {
     gridColumn: col + 1,
     gridRow: row + 1,
@@ -74,7 +77,7 @@ const Square = memo(function Square({ sq, st, owner, tag, focus, target, onClick
 
   return (
     <div
-      className={cls('sq', `sq--${sq.kind}`, `sq--${side}`, st?.mortgaged && 'is-mortgaged', focus && 'is-focus', target && 'is-target', !!owner && 'is-owned')}
+      className={cls('sq', `sq--${sq.kind}`, `sq--${side}`, priceInBand && 'sq--sideways', st?.mortgaged && 'is-mortgaged', focus && 'is-focus', target && 'is-target', !!owner && 'is-owned')}
       style={style}
       onClick={onClick ? () => onClick(sq.index) : undefined}
       role={onClick ? 'button' : undefined}
@@ -84,10 +87,16 @@ const Square = memo(function Square({ sq, st, owner, tag, focus, target, onClick
     >
       {sq.kind === 'street' && group && (
         <div className="sq__band">
-          <span className="sq__gnum" aria-hidden="true">
-            {group.number}
-            {group.symbol}
-          </span>
+          {priceInBand ? (
+            <span className="sq__bandprice" aria-hidden="true">
+              {sq.price}
+            </span>
+          ) : (
+            <span className="sq__gnum" aria-hidden="true">
+              {group.number}
+              {group.symbol}
+            </span>
+          )}
           {st && st.level > 0 && <DevMarks level={st.level} size="sm" />}
         </div>
       )}
@@ -102,7 +111,7 @@ const Square = memo(function Square({ sq, st, owner, tag, focus, target, onClick
         {sq.kind === 'go' && <div className="sq__note">PARTENZA +200</div>}
         {sq.kind === 'jail' && <div className="sq__note">Solo visita</div>}
         {sq.kind === 'tax' && <div className="sq__price">−{sq.amount}</div>}
-        {sq.price != null && <div className="sq__price">{sq.price}</div>}
+        {sq.price != null && !priceInBand && <div className="sq__price">{sq.price}</div>}
       </div>
       {sq.index === 10 && <div className="sq__cell">Pausa</div>}
       {owner && (
