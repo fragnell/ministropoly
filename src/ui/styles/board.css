@@ -67,6 +67,11 @@
   font-size: 0.95em;
   flex: none;
 }
+/* caselle senza categoria (servizi/opere): fascia prezzo in colore neutro */
+.sq__band--plain {
+  background: var(--forest);
+  color: #fff;
+}
 .sq--bottom .sq__band,
 .sq--top .sq__band {
   height: 2.6cqmin;
@@ -79,10 +84,6 @@
   justify-content: space-around;
   padding: 0.3em 0;
 }
-.sq__gnum {
-  letter-spacing: 0.02em;
-}
-
 /* caselle laterali con prezzo: la fascia mostra il valore invece del numero di categoria
    (che non serve) e il corpo diventa una riga sola, per sfruttare meglio una casella bassa e larga */
 .sq--sideways .sq__band {
@@ -122,6 +123,10 @@
 .sq__icon {
   font-size: 1.8em;
   line-height: 1;
+}
+.sq__icon--end {
+  font-size: 1.3em;
+  flex: none;
 }
 .sq__name {
   font-weight: 700;
